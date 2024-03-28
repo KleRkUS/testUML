@@ -1,0 +1,13 @@
+@startuml "Sequence diagram"
+participant Connection as Con
+participant StreamManagement as SM
+participant MessageManager as MM
+participant PackageFactory as PF
+participant PackageSubPart as PSP
+
+SM -> Con: Создает подключение
+Con -> SM: Возвращает поток
+SM -> MM: Разбивает поток на\nотдельные сообщения\nи для каждого из них\nсоздает менеджер
+MM -> PF: Выделяет из сообщения\nчасти по регулярному\nвыражению и создает\nфабрику их обработчиков
+MM -> PSP: Вызывает вывод сообщения в файл или на экран\nдля каждого из обработчиков
+@enduml

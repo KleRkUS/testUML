@@ -1,0 +1,152 @@
+@startuml "Classes diagram"
+
+enum ConnectionTypes {
+    DEFAULT
+}
+
+class ConnectionsRegExp {
+    {static} default: RegExp
+}
+
+class Connection {
+    + void Connection(manager: StreamManagement)
+    ..
+    - void connect()
+}
+
+class StreamManagement {
+    - connectionType: ConnectionTypes
+    - connection: Connection
+    + void onMessage(stream: Int)
+    - void decopmoseStream(stream: Int)
+}
+
+class MessageManager {
+    - connectionType: ConnectionTypes
+    - fabric: PackageFactory
+    ..
+    + void MessageManager(message: Int, connectionType: ConnectionTypes)
+    ..
+    - void decomposeMessage()
+    - void createOutput()
+}
+
+interface PackageFactory {
+    - connectionType: ConnectionTypes
+    - decomposedMessage: Int[]
+    ..
+    + void outputPackage()
+    ..
+    - void createFrameFormat()
+    - void createSenderAddress()
+    - void createRecieverAddress()
+    - void createHeaderChecksum()
+    - void createControlField()
+    - void createInformationField()
+    - void createFrameChecksum()
+    .. Любые дополнительные классы ..
+}
+
+class DefaultPackageFactory {
+    - connectionType: ConnectionTypes
+    - decomposedMessage: Int[]
+    ..
+    + void DefaultPackageFactory(connectionType: ConnectionTypes, decomposedMessage: Int[])
+    ..
+    + void outputPackage()
+    ..
+    - void createFrameFormat()
+    - void createSenderAddress()
+    - void createRecieverAddress()
+    - void createHeaderChecksum()
+    - void createControlField()
+    - void createInformationField()
+    - void createFrameChecksum()
+}
+
+class DefaultFrameFormat {
+    - subPart: Int
+    ..
+    + void DefaultFrameFormat(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultSenderAddress {
+    - subPart: Int
+    ..
+    + void DefaultSenderAddress(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultRecieverAddress {
+    - subPart: Int
+    ..
+    + void DefaultRecieverAddress(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultHeaderChecksum {
+    - subPart: Int
+    ..
+    + void DefaultHeaderChecksum(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultControlField {
+    - subPart: Int
+    ..
+    + void DefaultControlField(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultInformationField {
+    - subPart: Int
+    ..
+    + void DefaultInformationField(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+class DefaultFrameChecksum {
+    - subPart: Int
+    ..
+    + void DefaultFrameChecksum(subPart: Int)
+    ..
+    - outputToFile()
+    - outputToScreen()
+}
+
+Connection "Устанавливает соединение\nи вызывает onMessage поток" <-- StreamManagement
+MessageManager *-- StreamManagement
+ConnectionsRegExp <-- MessageManager
+ConnectionTypes .. StreamManagement
+ConnectionTypes .. MessageManager
+PackageFactory <|.. DefaultPackageFactory
+PackageFactory <-- MessageManager
+
+DefaultFrameFormat <.. DefaultPackageFactory
+DefaultSenderAddress <.. DefaultPackageFactory
+DefaultRecieverAddress <.. DefaultPackageFactory
+DefaultHeaderChecksum <.. DefaultPackageFactory
+DefaultControlField <.. DefaultPackageFactory
+DefaultInformationField <.. DefaultPackageFactory
+DefaultFrameChecksum <.. DefaultPackageFactory
+
+note "Менеджер потока разбивает\nвсё сообщение на отдельные пакеты\nиспользуя connectionType в зависимости от\nкоторого выбирается разделитель" as StreamNote
+note "Возвращает регулярное выражение\nв зависимости от ConnectionType\nНапример: '/([0-1]{16})(([0-1]{7}1){1,4})(([0-1]{7}1){1,4})([0-1]{16})([0,1]{8})([0,1]*)([0,1]{16})/'" as RegExpNote
+
+StreamNote .. StreamManagement
+RegExpNote .. ConnectionsRegExp
+
+@enduml
